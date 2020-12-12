@@ -1,0 +1,44 @@
+﻿@page "/"
+@page "/index"
+@inject IMoviesRepository moviesRepository
+
+@using Microsoft.AspNetCore.Components.Authorization
+
+
+<div>
+    <h3>In theaters</h3>
+    <MoviesList Movies="InTheaters" />
+</div>
+
+<div>
+    <h3>Upcoming Releases</h3>
+    <MoviesList Movies="UpcomingReleases" />
+</div>
+
+
+@message
+
+@code{
+
+    private string message;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationState { get; set; }
+
+    private List<Movie> InTheaters;
+    private List<Movie> UpcomingReleases;
+    protected async override Task OnInitializedAsync()
+    {
+        var response = await moviesRepository.GetIndexPageDTO();
+        InTheaters = response.Intheaters;
+        UpcomingReleases = response.UpcomingReleases;
+
+        var authState = await AuthenticationState;
+        message = authState.User.Identity.IsAuthenticated ? "authenticated" : "not authenticated";
+    }
+
+
+
+
+
+}
